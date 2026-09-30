@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediMate — Medical Information Assistant</title>
+    <style>
+        :root {
+            --bg: #07151a;
+            --panel: rgba(12, 31, 37, 0.88);
+            --panel-soft: rgba(255, 255, 255, 0.055);
+            --text: #ecfbfa;
+            --muted: #9bb8ba;
+            --accent: #42e8c1;
+            --accent-2: #62b7ff;
+            --danger: #ff9b9b;
+            --border: rgba(255, 255, 255, 0.10);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            color: var(--text);
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background:
+                radial-gradient(circle at 15% 10%, rgba(66, 232, 193, 0.13), transparent 30%),
+                radial-gradient(circle at 85% 80%, rgba(98, 183, 255, 0.12), transparent 32%),
+                var(--bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .app {
+            width: min(1100px, 100%);
+            height: min(780px, 94vh);
+            display: grid;
+            grid-template-columns: 285px 1fr;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            border-radius: 28px;
+            background: var(--panel);
+            box-shadow: 0 30px 90px rgba(0, 0, 0, 0.38);
+            backdrop-filter: blur(20px);
+        }
+
+        aside {
+            padding: 28px 22px;
+            border-right: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.025);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 34px;
+        }
+
+        .logo {
+            width: 46px;
+            height: 46px;
+            display: grid;
+            place-items: center;
+            border-radius: 15px;
+            color: #05251e;
+            font-size: 23px;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent), #b4ffe9);
+            box-shadow: 0 10px 30px rgba(66, 232, 193, 0.22);
+        }
+
+        .brand h1 {
+            margin: 0;
+            font-size: 20px;
+        }
+
+        .brand span {
+            display: block;
+            margin-top: 3px;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .side-title {
+            color: var(--muted);
+            font-size: 11px;
+            letter-spacing: 1.4px;
+            text-transform: uppercase;
+            margin: 0 0 12px;
+        }
+
+        .topic {
+            width: 100%;
+            margin: 8px 0;
+            padding: 13px 14px;
+            color: var(--text);
+            text-align: left;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            background: var(--panel-soft);
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+
+        .topic:hover {
+            border-color: rgba(66, 232, 193, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .notice {
+            margin-top: 28px;
+            padding: 14px;
+            border: 1px solid rgba(255, 155, 155, 0.18);
+            border-radius: 16px;
+            color: #d9e5e5;
+            background: rgba(255, 155, 155, 0.045);
+            font-size: 12px;
+            line-height: 1.55;
+        }
+
+        main {
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            padding: 22px 26px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: var(--accent);
+            box-shadow: 0 0 14px var(--accent);
+        }
+
+        .chat {
+            flex: 1;
+            overflow-y: auto;
+            padding: 28px;
+        }
+
+        .welcome {
+            max-width: 650px;
+            margin: 7vh auto 0;
+            text-align: center;
+        }
+
+        .welcome .pulse {
+            width: 66px;
+            height: 66px;
+            margin: 0 auto 18px;
+            display: grid;
+            place-items: center;
+            border-radius: 22px;
+            font-size: 30px;
+            background: linear-gradient(135deg, rgba(66, 232, 193, 0.16), rgba(98, 183, 255, 0.16));
+            border: 1px solid var(--border);
+        }
+
+        .welcome h2 {
+            margin: 0 0 10px;
+            font-size: clamp(25px, 4vw, 38px);
+        }
+
+        .welcome p {
+            margin: 0 auto;
+            color: var(--muted);
+            line-height: 1.65;
+        }
+
+        .message {
+            max-width: 78%;
+            margin: 0 0 18px;
+            padding: 14px 16px;
+            border-radius: 18px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+
+        .message.user {
+            margin-left: auto;
+            color: #06251f;
+            background: linear-gradient(135deg, var(--accent), #9effe5);
+            border-bottom-right-radius: 5px;
+        }
+
+        .message.bot {
+            margin-right: auto;
+            color: var(--text);
+            background: var(--panel-soft);
+            border: 1px solid var(--border);
+            border-bottom-left-radius: 5px;
+        }
+
+        .composer {
+            padding: 18px 22px 22px;
+            border-top: 1px solid var(--border);
+        }
+
+        .input-wrap {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+            padding: 8px;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            background: rgba(0, 0, 0, 0.16);
+        }
+
+        textarea {
+            flex: 1;
+            resize: none;
+            max-height: 130px;
+            padding: 11px 12px;
+            color: var(--text);
+            border: 0;
+            outline: 0;
+            background: transparent;
+            font: inherit;
+        }
+
+        textarea::placeholder {
+            color: #779294;
+        }
+
+        button.send {
+            width: 46px;
+            height: 46px;
+            flex: 0 0 auto;
+            border: 0;
+            border-radius: 15px;
+            color: #05251e;
+            background: var(--accent);
+            cursor: pointer;
+            font-size: 19px;
+            font-weight: 800;
+        }
+
+        button.send:disabled {
+            opacity: 0.45;
+            cursor: wait;
+        }
+
+        .footer {
+            margin: 9px 4px 0;
+            color: #6f898b;
+            font-size: 10px;
+            text-align: center;
+        }
+
+        @media (max-width: 760px) {
+            body { padding: 0; }
+            .app {
+                height: 100vh;
+                min-height: 100vh;
+                border-radius: 0;
+                grid-template-columns: 1fr;
+            }
+            aside { display: none; }
+            .chat { padding: 20px 16px; }
+            header { padding: 18px; }
+            .message { max-width: 90%; }
+            .welcome { margin-top: 12vh; }
+        }
+    </style>
+</head>
+<body>
+    <section class="app">
+        <aside>
+            <div class="brand">
+                <div class="logo">✚</div>
+                <div>
+                    <h1>MediMate</h1>
+                    <span>Medical information assistant</span>
+                </div>
+            </div>
+
+            <p class="side-title">Explore a topic</p>
+            <button class="topic" data-prompt="Explain what blood pressure means in simple terms.">🫀 Blood pressure</button>
+            <button class="topic" data-prompt="What are common causes of a headache, and when should someone seek medical care?">🧠 Headaches</button>
+            <button class="topic" data-prompt="Explain how the immune system protects the body.">🛡️ Immune system</button>
+            <button class="topic" data-prompt="Explain the difference between viruses and bacteria.">🔬 Viruses & bacteria</button>
+
+            <div class="notice">
+                <strong>Important:</strong> MediMate provides general health information for learning. It is not a doctor and does not replace professional medical care.
+            </div>
+        </aside>
+
+        <main>
+            <header>
+                <strong>MediMate</strong>
+                <div class="status"><span class="dot"></span> Ready</div>
+            </header>
+
+            <div class="chat" id="chat">
+                <div class="welcome" id="welcome">
+                    <div class="pulse">🩺</div>
+                    <h2>How can I help you learn?</h2>
+                    <p>Ask about medical concepts, symptoms in general, anatomy, physiology, prevention, or other health-education topics.</p>
+                </div>
+            </div>
+
+            <div class="composer">
+                <div class="input-wrap">
+                    <textarea id="message" rows="1" placeholder="Ask a medical education question..." aria-label="Message"></textarea>
+                    <button class="send" id="send" aria-label="Send message">➤</button>
+                </div>
+                <div class="footer">For educational information only • Seek a qualified healthcare professional for personal medical advice.</div>
+            </div>
+        </main>
+    </section>
+
+    <script>
+        const chat = document.getElementById("chat");
+        const input = document.getElementById("message");
+        const send = document.getElementById("send");
+        const welcome = document.getElementById("welcome");
+
+        function addMessage(text, type) {
+            if (welcome) welcome.remove();
+
+            const bubble = document.createElement("div");
+            bubble.className = `message ${type}`;
+            bubble.textContent = text;
+            chat.appendChild(bubble);
+            chat.scrollTop = chat.scrollHeight;
+        }
+
+        async function sendMessage() {
+            const message = input.value.trim();
+            if (!message || send.disabled) return;
+
+            addMessage(message, "user");
+            input.value = "";
+            input.style.height = "auto";
+            send.disabled = true;
+
+            const loading = document.createElement("div");
+            loading.className = "message bot";
+            loading.textContent = "MediMate is thinking…";
+            chat.appendChild(loading);
+            chat.scrollTop = chat.scrollHeight;
+
+            try {
+                const response = await fetch("/chat", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ message })
+                });
+
+                const data = await response.json();
+                loading.remove();
+
+                if (!response.ok) {
+                    addMessage(data.error || "Something went wrong.", "bot");
+                } else {
+                    addMessage(data.reply, "bot");
+                }
+            } catch {
+                loading.remove();
+                addMessage("I couldn't connect to the server. Please try again.", "bot");
+            } finally {
+                send.disabled = false;
+                input.focus();
+            }
+        }
+
+        send.addEventListener("click", sendMessage);
+
+        input.addEventListener("keydown", (event) => {
+            if (event.key === "Enter" && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        });
+
+        input.addEventListener("input", () => {
+            input.style.height = "auto";
+            input.style.height = `${Math.min(input.scrollHeight, 130)}px`;
+        });
+
+        document.querySelectorAll(".topic").forEach((button) => {
+            button.addEventListener("click", () => {
+                input.value = button.dataset.prompt;
+                input.dispatchEvent(new Event("input"));
+                input.focus();
+            });
+        });
+    </script>
+</body>
+</html>
